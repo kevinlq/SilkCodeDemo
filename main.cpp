@@ -1,19 +1,14 @@
-#include <QCoreApplication>
+#include <QApplication>
 
-#include <SilkAudioCode.h>
-#include <QDebug>
+#include "MainWidget.h"
 
 int main(int argc, char *argv[])
 {
-    QCoreApplication a(argc, argv);
+    QApplication app(argc, argv);
 
-    int nResult = -1;
+    MainWidget widget;
+    widget.resize(600, 460);
+    widget.show();
 
-    SilkAudioCode code;
-    //nResult = code.encode("test01.wav", "test01.silk");
-    nResult = code.decode("test01.silk", "test01.pcm");
-
-    qDebug() << "#nResult " << nResult;
-
-    return 0;
+    return app.exec();
 }

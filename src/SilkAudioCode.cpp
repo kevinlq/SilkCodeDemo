@@ -105,7 +105,7 @@ SilkAudioCode::SilkAudioCode()
 {
 }
 
-int SilkAudioCode::decodeFile(const std::string &inFileName, std::vector<uint16_t> &buffer)
+int SilkAudioCode::decodeFile(const std::string &inFileName, std::vector<uint16_t> &buffer, const int32_t sampleRate)
 {
     unsigned long tottime = 0, starttime = 0;
     double    filetime = 0;
@@ -120,7 +120,7 @@ int SilkAudioCode::decodeFile(const std::string &inFileName, std::vector<uint16_
     SKP_int16 nBytesPerPacket[ MAX_LBRR_DELAY + 1 ] = {0}, totBytes = 0, maxBytes = sizeof(payload);
     SKP_int16 out[ ( ( FRAME_LENGTH_MS * MAX_API_FS_KHZ ) << 1 ) * MAX_INPUT_FRAMES ], *outPtr = nullptr;
     FILE      *bitInFile = nullptr;
-    SKP_int32 packetSize_ms = 0, API_Fs_Hz = 16000;
+    SKP_int32 packetSize_ms = 0;
     SKP_int32 decSizeBytes = 0;
     void      *psDec = nullptr;
     SKP_float loss_prob = 0;
@@ -129,7 +129,7 @@ int SilkAudioCode::decodeFile(const std::string &inFileName, std::vector<uint16_
     /* Seed for the random number generator, which is used for simulating packet loss */
     static SKP_int32 rand_seed = 1;
 
-    DecControl.API_sampleRate = API_Fs_Hz;
+    DecControl.API_sampleRate = sampleRate;
 
     /* Initialize to one frame per packet, for proper concealment before first packet arrives */
     DecControl.framesPerPacket = 1;
@@ -452,10 +452,7 @@ int SilkAudioCode::decodeFile(const std::string &inFileName, std::vector<uint16_
         payloadEnd -= nBytesPerPacket[ 0 ];
         SKP_memmove( nBytesPerPacket, &nBytesPerPacket[ 1 ], MAX_LBRR_DELAY * sizeof( SKP_int16 ) );
 
-        if( !quiet )
-        {
-            fprintf( stderr, "\rPackets decoded:              %d", totPackets );
-        }
+        fprintf( stderr, "\rPackets decoded:              %d", totPackets );
     }
 
     printf( "\nDecoding Finished \n" );
